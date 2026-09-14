@@ -110,6 +110,22 @@ class ComprehensiveQATest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_csv_upload_accepts_various_mime_types_with_csv_extension()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Excel-exported CSV mime type
+        $excelCsv = UploadedFile::fake()->createWithContent('data.csv', "0104600000000000215XXXXX\n", 'application/vnd.ms-excel');
+
+        $response = $this->postJson(route('dashboard.preview-csv'), [
+            'csv_file' => $excelCsv,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('success', true);
+    }
+
     public function test_csv_preview_handles_codes_shorter_than_5_chars()
     {
         $user = User::factory()->create();

@@ -64,7 +64,7 @@ class DashboardController extends Controller
     public function previewCsv(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:10240',
+            'csv_file' => 'required|file|extensions:csv,txt|max:10240',
         ]);
 
         $file = $request->file('csv_file');
@@ -109,7 +109,7 @@ class DashboardController extends Controller
     public function storeBatch(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:20480',
+            'csv_file' => 'required|file|extensions:csv,txt|max:20480',
             'product_name' => 'required|string|max:255',
         ]);
 
