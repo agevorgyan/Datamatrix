@@ -12,10 +12,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bwip-js@3.4.4/dist/bwip-js-min.js"></script>
 
     <style>
-        /* Exact millimeter print page rules for Xprinter XP-356B */
+        /* Exact millimeter print page rules */
         @page {
-            size: {{ $setting->width_mm }}mm {{ $setting->height_mm }}mm;
-            margin: 0;
+            size: {{ $setting->width_mm }}mm {{ $setting->height_mm }}mm {{ $setting->orientation === 'landscape' ? 'landscape' : 'portrait' }};
+            margin: {{ $setting->margin_top_mm ?? 0 }}mm {{ $setting->margin_right_mm ?? 0 }}mm {{ $setting->margin_bottom_mm ?? 0 }}mm {{ $setting->margin_left_mm ?? 0 }}mm;
         }
 
         @media print {
@@ -27,6 +27,7 @@
                 background: #ffffff !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                zoom: {{ ($setting->print_scale ?? 100) / 100 }};
             }
 
             .no-print {
@@ -37,6 +38,7 @@
                 page-break-after: always;
                 break-after: page;
                 margin: 0 !important;
+                margin-bottom: {{ $setting->label_gap_mm ?? 0 }}mm !important;
                 border: none !important;
                 box-shadow: none !important;
             }
@@ -72,7 +74,7 @@
             left: {{ $setting->last5_pos_x }}mm;
             top: {{ $setting->last5_pos_y }}mm;
             font-size: {{ $setting->last5_font_size }}pt;
-            font-weight: {{ $setting->last5_font_bold ? '800' : '500' }};
+            font-weight: {{ $setting->last5_font_bold ? '800' : '400' }};
             line-height: 1;
             color: #000000;
         }
@@ -100,7 +102,7 @@
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-600 text-white">{{ $printJob->total_codes }} լեյբլ</span>
             </h1>
             <p class="text-xs text-slate-400 mt-0.5">
-                Ապրանք՝ <b>{{ $printJob->product_name }}</b> • Չափս՝ <b>{{ $setting->width_mm }}x{{ $setting->height_mm }}մմ</b> (Xprinter XP-356B)
+                Ապրանք՝ <b>{{ $printJob->product_name }}</b> • Չափս՝ <b>{{ $setting->width_mm }}x{{ $setting->height_mm }}մմ</b> • Layout: <b>{{ ucfirst($setting->orientation) }}</b> • DPI: <b>{{ $setting->print_dpi ?? 203 }} DPI</b> • Scale: <b>{{ $setting->print_scale ?? 100 }}%</b>
             </p>
         </div>
 
@@ -135,6 +137,9 @@
     <script>
         // High-DPI DataMatrix Canvas Batch Renderer
         const codeItems = @json($codes);
+        const printDpi = {{ $setting->print_dpi ?? 203 }};
+        const dpiScaleMap = { 203: 4, 300: 6, 600: 10 };
+        const bwipScaleFactor = dpiScaleMap[printDpi] || 4;
 
         function renderAllDataMatrixCodes() {
             codeItems.forEach((item, index) => {
@@ -143,7 +148,7 @@
                     bwipjs.toCanvas(canvasId, {
                         bcid: 'datamatrix',
                         text: item.code,
-                        scale: 4, // High Resolution 300+ DPI for thermal clarity
+                        scale: bwipScaleFactor, // Scaled for high thermal DPI density
                         padding: 0
                     });
                 } catch (err) {
