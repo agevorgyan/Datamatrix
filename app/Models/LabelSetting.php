@@ -62,6 +62,79 @@ class LabelSetting extends Model
         'is_default' => 'boolean',
     ];
 
+    public static function getForUserOrGuest(?User $user = null): self
+    {
+        if ($user) {
+            $setting = self::where('user_id', $user->id)
+                ->where('is_default', true)
+                ->first();
+
+            if ($setting) {
+                return $setting;
+            }
+
+            return self::create([
+                'user_id' => $user->id,
+                'setting_name' => 'XP-356B (20x30մմ)',
+                'width_mm' => 20.0,
+                'height_mm' => 30.0,
+                'margin_mm' => 1.0,
+                'margin_top_mm' => 0.0,
+                'margin_bottom_mm' => 0.0,
+                'margin_left_mm' => 0.0,
+                'margin_right_mm' => 0.0,
+                'label_gap_mm' => 2.0,
+                'orientation' => 'portrait',
+                'print_scale' => 100,
+                'print_dpi' => 203,
+                'product_font_size' => 9,
+                'product_font_bold' => true,
+                'product_pos_x' => 1.5,
+                'product_pos_y' => 2.0,
+                'last5_font_size' => 11,
+                'last5_font_bold' => true,
+                'last5_pos_x' => 1.5,
+                'last5_pos_y' => 7.0,
+                'datamatrix_size' => 15.0,
+                'datamatrix_pos_x' => 2.5,
+                'datamatrix_pos_y' => 12.0,
+                'is_default' => true,
+            ]);
+        }
+
+        if (session()->has('guest_label_setting')) {
+            $data = session('guest_label_setting');
+            return new self($data);
+        }
+
+        return new self([
+            'setting_name' => 'XP-356B (20x30մմ)',
+            'width_mm' => 20.0,
+            'height_mm' => 30.0,
+            'margin_mm' => 1.0,
+            'margin_top_mm' => 0.0,
+            'margin_bottom_mm' => 0.0,
+            'margin_left_mm' => 0.0,
+            'margin_right_mm' => 0.0,
+            'label_gap_mm' => 2.0,
+            'orientation' => 'portrait',
+            'print_scale' => 100,
+            'print_dpi' => 203,
+            'product_font_size' => 9,
+            'product_font_bold' => true,
+            'product_pos_x' => 1.5,
+            'product_pos_y' => 2.0,
+            'last5_font_size' => 11,
+            'last5_font_bold' => true,
+            'last5_pos_x' => 1.5,
+            'last5_pos_y' => 7.0,
+            'datamatrix_size' => 15.0,
+            'datamatrix_pos_x' => 2.5,
+            'datamatrix_pos_y' => 12.0,
+            'is_default' => true,
+        ]);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

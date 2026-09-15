@@ -56,12 +56,24 @@
                 </a>
             </div>
 
-            <!-- Burger Menu Trigger Button -->
+            <!-- Burger Menu Trigger Button & User Status -->
             <div class="flex items-center space-x-3">
                 @auth
                     <div class="hidden sm:flex items-center space-x-2 text-xs text-slate-300 bg-slate-800/90 px-3.5 py-1.5 rounded-full border border-slate-700/60">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span class="font-semibold">{{ Auth::user()->name }}</span>
+                    </div>
+                @else
+                    <div class="hidden sm:flex items-center space-x-2">
+                        <span class="text-xs font-semibold px-3 py-1 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-full">
+                            👤 Հյուրի ռեժիմ (Guest)
+                        </span>
+                        <a href="{{ route('login') }}" class="px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition">
+                            🔑 Մուտք
+                        </a>
+                        <a href="{{ route('register') }}" class="px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition shadow-sm">
+                            ✨ Գրանցվել
+                        </a>
                     </div>
                 @endauth
 
@@ -80,23 +92,23 @@
         <!-- Burger Menu Dropdown Drawer Panel -->
         <div id="mobileDrawer" class="hidden bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-5 shadow-2xl transition-all">
             <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <a href="{{ route('dashboard') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('dashboard') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                    <span class="text-xl">📊</span>
+                    <div>
+                        <div class="font-bold text-sm">Dashboard / Տպագրություն</div>
+                        <div class="text-[11px] text-slate-400">Կոդերի ներբեռնում և տպում</div>
+                    </div>
+                </a>
+
+                <a href="{{ route('settings.edit') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('settings.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                    <span class="text-xl">⚙️</span>
+                    <div>
+                        <div class="font-bold text-sm">Կարգավորումներ</div>
+                        <div class="text-[11px] text-slate-400">Լեյբլի չափսեր, DPI, margins</div>
+                    </div>
+                </a>
+
                 @auth
-                    <a href="{{ route('dashboard') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('dashboard') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
-                        <span class="text-xl">📊</span>
-                        <div>
-                            <div class="font-bold text-sm">Dashboard / Տպագրություն</div>
-                            <div class="text-[11px] text-slate-400">Կոդերի ներբեռնում և տպում</div>
-                        </div>
-                    </a>
-
-                    <a href="{{ route('settings.edit') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('settings.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
-                        <span class="text-xl">⚙️</span>
-                        <div>
-                            <div class="font-bold text-sm">Կարգավորումներ</div>
-                            <div class="text-[11px] text-slate-400">Լեյբլի չափսեր, DPI, margins</div>
-                        </div>
-                    </a>
-
                     <a href="{{ route('history.index') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('history.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
                         <span class="text-xl">📜</span>
                         <div>
@@ -104,16 +116,29 @@
                             <div class="text-[11px] text-slate-400">Նախկինում տպված batch-եր</div>
                         </div>
                     </a>
-
-                    <a href="{{ route('help.index') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('help.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
-                        <span class="text-xl">❓</span>
+                @else
+                    <a href="{{ route('login') }}" class="p-3.5 rounded-xl transition-all border bg-slate-800/40 border-slate-700/40 text-slate-400 hover:bg-slate-800 hover:text-slate-200 flex items-center space-x-3 group">
+                        <span class="text-xl">🔒</span>
                         <div>
-                            <div class="font-bold text-sm">Օգնություն & Ուղեցույց</div>
-                            <div class="text-[11px] text-slate-400">Հաճախ տրվող հարցեր</div>
+                            <div class="font-bold text-sm flex items-center space-x-1">
+                                <span>Պատմություն</span>
+                                <span class="text-[10px] bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded font-normal">Մուտք</span>
+                            </div>
+                            <div class="text-[11px] text-slate-500">Պահանջվում է մուտք գործել</div>
                         </div>
                     </a>
+                @endauth
 
-                    <div class="sm:col-span-2 md:col-span-4 pt-3 mt-2 border-t border-slate-800 flex items-center justify-between">
+                <a href="{{ route('help.index') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('help.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                    <span class="text-xl">❓</span>
+                    <div>
+                        <div class="font-bold text-sm">Օգնություն & Ուղեցույց</div>
+                        <div class="text-[11px] text-slate-400">Հաճախ տրվող հարցեր</div>
+                    </div>
+                </a>
+
+                <div class="sm:col-span-2 md:col-span-4 pt-3 mt-2 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    @auth
                         <span class="text-xs text-slate-400">👤 Մուտք գործված է որպես՝ <b class="text-white">{{ Auth::user()->name }}</b></span>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
@@ -122,17 +147,18 @@
                                 <span>Դուրս գալ</span>
                             </button>
                         </form>
-                    </div>
-                @else
-                    <a href="{{ route('login') }}" class="p-3.5 rounded-xl bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700 flex items-center space-x-3">
-                        <span class="text-xl">🔑</span>
-                        <span class="font-bold text-sm">Մուտք</span>
-                    </a>
-                    <a href="{{ route('register') }}" class="p-3.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-500 flex items-center space-x-3">
-                        <span class="text-xl">✨</span>
-                        <span class="font-bold text-sm">Գրանցվել</span>
-                    </a>
-                @endauth
+                    @else
+                        <span class="text-xs text-amber-300 font-medium">👤 Դուք օգտվում եք Հյուրի ռեժիմով (առանց պատմության պահպանման)</span>
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ route('login') }}" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                                🔑 Մուտք
+                            </a>
+                            <a href="{{ route('register') }}" class="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition shadow">
+                                ✨ Գրանցվել
+                            </a>
+                        </div>
+                    @endauth
+                </div>
             </div>
         </div>
     </header>

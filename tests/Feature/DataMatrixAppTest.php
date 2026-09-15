@@ -33,6 +33,25 @@ class DataMatrixAppTest extends TestCase
         ]);
     }
 
+    public function test_user_can_register_with_phone_and_marketing_consent()
+    {
+        $response = $this->post('/register', [
+            'name' => 'Armen Petrosyan',
+            'email' => 'armen@elab.am',
+            'phone' => '+374 99 123456',
+            'marketing_consent' => '1',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertDatabaseHas('users', [
+            'email' => 'armen@elab.am',
+            'phone' => '+374 99 123456',
+            'marketing_consent' => true,
+        ]);
+    }
+
     public function test_csv_preview_returns_first_5_rows()
     {
         $user = User::factory()->create();

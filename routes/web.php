@@ -19,21 +19,23 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/terms', [LegalController::class, 'terms'])->name('terms');
 Route::get('/privacy', [LegalController::class, 'privacy'])->name('privacy');
 
-// Main Entry Point (Publicly handles GET/HEAD and redirects to login if unauthenticated)
+// Main Entry Point & Operations (Accessible to Guests & Authenticated Users)
 Route::match(['get', 'head'], '/', [DashboardController::class, 'index'])->name('dashboard');
+Route::post('/dashboard/preview-csv', [DashboardController::class, 'previewCsv'])->name('dashboard.preview-csv');
+Route::post('/dashboard/store-batch', [DashboardController::class, 'storeBatch'])->name('dashboard.store-batch');
+Route::get('/dashboard/print-guest', [DashboardController::class, 'printJobGuest'])->name('dashboard.print-guest');
 
-// Authenticated Routes
+// Dedicated Settings Page (Accessible to Guests & Auth)
+Route::get('/settings', [LabelSettingController::class, 'edit'])->name('settings.edit');
+Route::post('/settings', [LabelSettingController::class, 'update'])->name('settings.update');
+
+// Dedicated Help / Documentation Page (Public)
+Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+
+// Authenticated Only Routes
 Route::middleware(['auth'])->group(function () {
-    Route::post('/dashboard/preview-csv', [DashboardController::class, 'previewCsv'])->name('dashboard.preview-csv');
-    Route::post('/dashboard/store-batch', [DashboardController::class, 'storeBatch'])->name('dashboard.store-batch');
     Route::get('/dashboard/print/{printJob}', [DashboardController::class, 'printJob'])->name('dashboard.print');
-
-    // Dedicated Settings Page
-    Route::get('/settings', [LabelSettingController::class, 'edit'])->name('settings.edit');
-    Route::post('/settings', [LabelSettingController::class, 'update'])->name('settings.update');
-
-    // Dedicated Help / Documentation Page
-    Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
 
     // History Routes
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');

@@ -13,47 +13,23 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
         $user = Auth::user();
         
-        // Retrieve default or active setting for the user
-        $setting = LabelSetting::where('user_id', $user->id)
-            ->where('is_default', true)
-            ->first();
+        $setting = LabelSetting::getForUserOrGuest($user);
 
-        if (!$setting) {
-            $setting = LabelSetting::create([
-                'user_id' => $user->id,
-                'setting_name' => 'XP-356B (20x30մմ)',
-                'width_mm' => 20.0,
-                'height_mm' => 30.0,
-                'margin_mm' => 1.0,
-                'orientation' => 'portrait',
-                'product_font_size' => 9,
-                'product_font_bold' => true,
-                'product_pos_x' => 1.5,
-                'product_pos_y' => 2.0,
-                'last5_font_size' => 11,
-                'last5_font_bold' => true,
-                'last5_pos_x' => 1.5,
-                'last5_pos_y' => 7.0,
-                'datamatrix_size' => 15.0,
-                'datamatrix_pos_x' => 2.5,
-                'datamatrix_pos_y' => 12.0,
-                'is_default' => true,
-            ]);
+        if ($user) {
+            $recentJobs = PrintJob::where('user_id', $user->id)
+                ->latest()
+                ->take(5)
+                ->get();
+
+            $totalPrintedCodes = PrintJob::where('user_id', $user->id)->sum('printed_count');
+            $totalBatchesCount = PrintJob::where('user_id', $user->id)->count();
+        } else {
+            $recentJobs = collect();
+            $totalPrintedCodes = 0;
+            $totalBatchesCount = 0;
         }
-
-        $recentJobs = PrintJob::where('user_id', $user->id)
-            ->latest()
-            ->take(5)
-            ->get();
-
-        $totalPrintedCodes = PrintJob::where('user_id', $user->id)->sum('printed_count');
-        $totalBatchesCount = PrintJob::where('user_id', $user->id)->count();
 
         return view('dashboard.index', compact('setting', 'recentJobs', 'totalPrintedCodes', 'totalBatchesCount'));
     }
@@ -150,6 +126,29 @@ class DashboardController extends Controller
             ], 422);
         }
 
+        if (!$user) {
+            // Guest mode: do not save history to database
+            $guestJob = [
+                'product_name' => $productName,
+                'file_name' => $originalFilename,
+                'total_codes' => count($codes),
+                'printed_count' => count($codes),
+                'codes' => array_map(function ($c) {
+                    return (object) [
+                        'code' => $c['code'],
+                        'last_5_chars' => $c['last_5_chars'],
+                    ];
+                }, $codes),
+            ];
+            session(['guest_print_job' => $guestJob]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ֆայլը ներբեռնվեց (Հյուրի ռեժիմ - առանց պատմության):',
+                'redirect_url' => route('dashboard.print-guest'),
+            ]);
+        }
+
         $printJob = DB::transaction(function () use ($user, $productName, $originalFilename, $codes) {
             $job = PrintJob::create([
                 'user_id' => $user->id,
@@ -189,6 +188,29 @@ class DashboardController extends Controller
     }
 
     /**
+     * Render thermal label sheet for guest session print job.
+     */
+    public function printJobGuest()
+    {
+        if (!session()->has('guest_print_job')) {
+            return redirect()->route('dashboard')->with('error', 'Տպագրման ֆայլ չի գտնվել: Խնդրում ենք ներբեռնել CSV ֆայլ:');
+        }
+
+        $guestData = session('guest_print_job');
+        $printJob = new PrintJob([
+            'product_name' => $guestData['product_name'],
+            'file_name' => $guestData['file_name'],
+            'total_codes' => $guestData['total_codes'],
+            'printed_count' => $guestData['printed_count'],
+        ]);
+
+        $codes = collect($guestData['codes']);
+        $setting = LabelSetting::getForUserOrGuest(Auth::user());
+
+        return view('print.label_sheet', compact('printJob', 'codes', 'setting'));
+    }
+
+    /**
      * Render the thermal label sheet print view for a specific PrintJob.
      */
     public function printJob(PrintJob $printJob)
@@ -197,9 +219,7 @@ class DashboardController extends Controller
             abort(403);
         }
 
-        $setting = LabelSetting::where('user_id', Auth::id())
-            ->where('is_default', true)
-            ->first();
+        $setting = LabelSetting::getForUserOrGuest(Auth::user());
 
         $codes = $printJob->codes()->get();
 

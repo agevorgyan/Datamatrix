@@ -10,12 +10,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'phone', 'marketing_consent', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'marketing_consent' => 'boolean',
+            'password' => 'hashed',
+        ];
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -53,13 +62,5 @@ class User extends Authenticatable
     public function printJobs()
     {
         return $this->hasMany(PrintJob::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
     }
 }

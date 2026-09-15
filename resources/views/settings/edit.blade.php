@@ -210,6 +210,49 @@
                     </button>
                 </form>
             </div>
+
+            <!-- CHANGE PASSWORD CARD -->
+            <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center space-x-2">
+                        <span>🔐 Փոխել Գաղտնաբառը</span>
+                    </h2>
+                    <span class="text-[11px] text-slate-600 font-semibold">Ծանուցումը կուղարկվի datamatrix@elab.am</span>
+                </div>
+
+                <form action="{{ route('password.change') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label for="current_password" class="block text-xs font-semibold uppercase text-slate-600 mb-1">Ընթացիկ Գաղտնաբառ</label>
+                        <input type="password" name="current_password" id="current_password" required
+                            class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition">
+                        @error('current_password')
+                            <p class="text-red-500 text-xs mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="password" class="block text-xs font-semibold uppercase text-slate-600 mb-1">Նոր Գաղտնաբառ</label>
+                            <input type="password" name="password" id="password" required minlength="8"
+                                class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition">
+                            @error('password')
+                                <p class="text-red-500 text-xs mt-1 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="password_confirmation" class="block text-xs font-semibold uppercase text-slate-600 mb-1">Կրկնել Նոր Գաղտնաբառը</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" required minlength="8"
+                                class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition shadow">
+                        🔒 Թարմացնել Գաղտնաբառը
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- RIGHT COLUMN: Interactive Drag & Drop Live Preview Box (6 Cols) -->

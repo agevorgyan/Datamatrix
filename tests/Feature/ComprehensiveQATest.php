@@ -45,6 +45,55 @@ class ComprehensiveQATest extends TestCase
         $response->assertSessionHasErrors(['email']);
     }
 
+    public function test_registration_sends_email_notification_to_datamatrix_elab_am()
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $response = $this->post('/register', [
+            'name' => 'Notification User',
+            'email' => 'notify@elab.am',
+            'phone' => '+37499112233',
+            'marketing_consent' => '1',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('dashboard'));
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\UserRegistrationMail::class, function ($mail) {
+            return $mail->hasTo('datamatrix@elab.am') &&
+                   $mail->user->email === 'notify@elab.am' &&
+                   $mail->user->phone === '+37499112233' &&
+                   $mail->user->marketing_consent === true;
+        });
+    }
+
+    public function test_password_change_sends_email_notification_to_datamatrix_elab_am()
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+
+        $user = User::factory()->create([
+            'email' => 'passchange@elab.am',
+            'password' => \Illuminate\Support\Facades\Hash::make('oldpassword123'),
+        ]);
+
+        $this->actingAs($user);
+
+        $response = $this->post('/change-password', [
+            'current_password' => 'oldpassword123',
+            'password' => 'newpassword123',
+            'password_confirmation' => 'newpassword123',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('newpassword123', $user->fresh()->password));
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\PasswordChangedMail::class, function ($mail) {
+            return $mail->hasTo('datamatrix@elab.am') &&
+                   $mail->user->email === 'passchange@elab.am';
+        });
+    }
+
     public function test_user_data_isolation_security()
     {
         $userA = User::factory()->create(['email' => 'usera@elab.am']);

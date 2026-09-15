@@ -17,6 +17,15 @@
                 <p class="text-slate-300 text-xs md:text-sm mt-1 max-w-2xl">
                     Ներբեռնեք CSV ֆայլը, ստուգեք 5 տողերի preview-ն և տպեք լեյբլները ունիվերսալ ջերմային պրինտերներով։
                 </p>
+
+                @guest
+                    <div class="mt-3 p-3 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-200 text-xs flex items-center space-x-2">
+                        <span class="text-base">👤</span>
+                        <div>
+                            <strong class="text-white">Հյուրի ռեժիմ․</strong> Դուք կարող եք ազատ օգտվել համակարգից և տպել լեյբլներ առանց գրանցվելու (առանց պատմության)։ Պատմությունը պահպանելու համար <a href="{{ route('login') }}" class="underline font-bold text-amber-300 hover:text-white">Մուտք գործեք</a> կամ <a href="{{ route('register') }}" class="underline font-bold text-emerald-300 hover:text-white">Գրանցվեք</a>։
+                        </div>
+                    </div>
+                @endguest
             </div>
 
             <!-- Widened Responsive KPI Metric Cards -->
@@ -165,32 +174,41 @@
             <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200">
                 <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center justify-between">
                     <span>⏱️ Վերջին Տպագրությունները</span>
-                    <a href="{{ route('history.index') }}" class="text-xs text-emerald-600 font-semibold hover:underline">Տեսնել բոլորը &rarr;</a>
+                    @auth
+                        <a href="{{ route('history.index') }}" class="text-xs text-emerald-600 font-semibold hover:underline">Տեսնել բոլորը &rarr;</a>
+                    @endauth
                 </h3>
 
-                @if($recentJobs->count() > 0)
-                    <div class="divide-y divide-slate-100">
-                        @foreach($recentJobs as $job)
-                            <div class="py-3 flex items-center justify-between gap-3 text-xs overflow-hidden">
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-bold text-slate-900 truncate" title="{{ $job->product_name }}">
-                                        {{ $job->product_name }}
+                @auth
+                    @if($recentJobs->count() > 0)
+                        <div class="divide-y divide-slate-100">
+                            @foreach($recentJobs as $job)
+                                <div class="py-3 flex items-center justify-between gap-3 text-xs overflow-hidden">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-bold text-slate-900 truncate" title="{{ $job->product_name }}">
+                                            {{ $job->product_name }}
+                                        </div>
+                                        <div class="text-slate-400 text-[11px] flex items-center space-x-1 min-w-0" title="{{ $job->file_name }}">
+                                            <span class="font-mono max-w-[120px] sm:max-w-[160px] truncate block">{{ $job->file_name }}</span>
+                                            <span class="shrink-0">• {{ number_format($job->total_codes) }} կոդ</span>
+                                        </div>
                                     </div>
-                                    <div class="text-slate-400 text-[11px] flex items-center space-x-1 min-w-0" title="{{ $job->file_name }}">
-                                        <span class="font-mono max-w-[120px] sm:max-w-[160px] truncate block">{{ $job->file_name }}</span>
-                                        <span class="shrink-0">• {{ number_format($job->total_codes) }} կոդ</span>
-                                    </div>
+                                    <a href="{{ route('dashboard.print', $job->id) }}" target="_blank" class="shrink-0 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold rounded-lg transition border border-emerald-200 inline-flex items-center space-x-1 whitespace-nowrap">
+                                        <span>🖨️</span>
+                                        <span>Տպել</span>
+                                    </a>
                                 </div>
-                                <a href="{{ route('dashboard.print', $job->id) }}" target="_blank" class="shrink-0 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold rounded-lg transition border border-emerald-200 inline-flex items-center space-x-1 whitespace-nowrap">
-                                    <span>🖨️</span>
-                                    <span>Տպել</span>
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-xs text-slate-400 italic">Դեռ տպագրության պատմություն չկա:</p>
+                    @endif
                 @else
-                    <p class="text-xs text-slate-400 italic">Դեռ տպագրության պատմություն չկա:</p>
-                @endif
+                    <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 space-y-2">
+                        <p class="font-medium text-slate-800">🔒 <b>Հյուրի ռեժիմով տպագրության պատմությունը չի պահպանվում:</b></p>
+                        <p class="text-[11px] text-slate-500">Նախկինում տպված խմբաքանակները պահպանելու համար <a href="{{ route('login') }}" class="text-emerald-600 font-bold hover:underline">մուտք գործեք</a> կամ <a href="{{ route('register') }}" class="text-emerald-600 font-bold hover:underline">գրանցվեք</a>:</p>
+                    </div>
+                @endauth
             </div>
 
         </div>
