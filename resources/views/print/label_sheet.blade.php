@@ -15,13 +15,13 @@
         /* Exact millimeter print page rules */
         @page {
             size: {{ $setting->width_mm }}mm {{ $setting->height_mm }}mm {{ $setting->orientation === 'landscape' ? 'landscape' : 'portrait' }};
-            margin: {{ $setting->margin_top_mm ?? 0 }}mm {{ $setting->margin_right_mm ?? 0 }}mm {{ $setting->margin_bottom_mm ?? 0 }}mm {{ $setting->margin_left_mm ?? 0 }}mm;
+            margin: 0;
         }
 
         @media print {
             html, body {
-                width: {{ $setting->width_mm }}mm;
-                height: {{ $setting->height_mm }}mm;
+                width: {{ $setting->width_mm }}mm !important;
+                height: {{ $setting->height_mm }}mm !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background: #ffffff !important;
@@ -34,13 +34,27 @@
                 display: none !important;
             }
 
-            .label-page {
-                page-break-after: always;
-                break-after: page;
+            .no-print-bg {
+                padding: 0 !important;
                 margin: 0 !important;
-                margin-bottom: {{ $setting->label_gap_mm ?? 0 }}mm !important;
+                display: block !important;
+                gap: 0 !important;
+                background: #ffffff !important;
+            }
+
+            .label-page {
+                width: {{ $setting->width_mm }}mm !important;
+                height: {{ $setting->height_mm }}mm !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 border: none !important;
                 box-shadow: none !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
             }
         }
 
@@ -95,25 +109,40 @@
 <body class="bg-slate-100 min-h-screen text-slate-800 antialiased">
 
     <!-- Top Floating Toolbar (Hidden during print) -->
-    <div class="no-print sticky top-0 z-50 bg-slate-900 text-white px-6 py-4 shadow-xl flex items-center justify-between border-b border-slate-800">
-        <div>
-            <h1 class="text-base font-bold flex items-center space-x-2">
-                <span>🖨️ Տպագրության Պատրաստ Խմբաքանակ</span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-600 text-white">{{ $printJob->total_codes }} լեյբլ</span>
-            </h1>
-            <p class="text-xs text-slate-400 mt-0.5">
-                Ապրանք՝ <b>{{ $printJob->product_name }}</b> • Չափս՝ <b>{{ $setting->width_mm }}x{{ $setting->height_mm }}մմ</b> • Layout: <b>{{ ucfirst($setting->orientation) }}</b> • DPI: <b>{{ $setting->print_dpi ?? 203 }} DPI</b> • Scale: <b>{{ $setting->print_scale ?? 100 }}%</b>
-            </p>
+    <div class="no-print sticky top-0 z-50 bg-slate-900 text-white px-6 py-4 shadow-xl border-b border-slate-800 space-y-3">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-base font-bold flex items-center space-x-2">
+                    <span>🖨️ Տպագրության Պատրաստ Խմբաքանակ</span>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-600 text-white">{{ $printJob->total_codes }} լեյբլ</span>
+                </h1>
+                <p class="text-xs text-slate-400 mt-0.5">
+                    Ապրանք՝ <b>{{ $printJob->product_name }}</b> • Չափս՝ <b>{{ $setting->width_mm }}x{{ $setting->height_mm }}մմ</b> • Layout: <b>{{ ucfirst($setting->orientation) }}</b> • DPI: <b>{{ $setting->print_dpi ?? 203 }} DPI</b> • Scale: <b>{{ $setting->print_scale ?? 100 }}%</b>
+                </p>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="window.close()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition">
+                    Փակել
+                </button>
+                <button onclick="triggerThermalPrint()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    <span>ՏՊԵԼ ՀԻՄԱ (Print)</span>
+                </button>
+            </div>
         </div>
 
-        <div class="flex items-center space-x-3">
-            <button onclick="window.close()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition">
-                Փակել
-            </button>
-            <button onclick="triggerThermalPrint()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                <span>ՏՊԵԼ ՀԻՄԱ (Print)</span>
-            </button>
+        <!-- Chrome Print Dialog Warning & Setup Guide Banner -->
+        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200 text-xs flex items-start space-x-3">
+            <span class="text-base shrink-0">⚠️</span>
+            <div class="space-y-1">
+                <div class="font-bold text-amber-300">Պրինտերի Ճիշտ Կարգավորումները Chrome Print Պատուհանում․</div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1">
+                    <div>1. <b>Layout (Ուղղվածություն):</b> Ընտրեք <span class="text-amber-300 font-bold">Portrait (Ուղղաձիգ)</span></div>
+                    <div>2. <b>Margins (Լուսանցքներ):</b> Ընտրեք <span class="text-amber-300 font-bold">None (Առանց լուսանցքների)</span></div>
+                    <div>3. <b>Paper size (Թղթի չափս):</b> Ընտրեք <span class="text-amber-300 font-bold">{{ $setting->width_mm }}x{{ $setting->height_mm }}մմ</span></div>
+                </div>
+            </div>
         </div>
     </div>
 
