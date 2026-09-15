@@ -33,6 +33,9 @@
                     <input type="checkbox" name="remember" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500">
                     <span class="text-xs text-slate-600 font-medium">Հիշել ինձ</span>
                 </label>
+                <a href="{{ route('password.request') }}" class="text-xs text-sky-600 hover:underline font-semibold">
+                    Մոռացե՞լ եք գաղտնաբառը
+                </a>
             </div>
 
             <button type="submit" 

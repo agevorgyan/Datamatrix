@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Mail\UserRegistrationMail;
 use App\Mail\PasswordChangedMail;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -98,6 +102,96 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->route('dashboard')->with('success', 'Հաշիվը հաջողությամբ ստեղծվեց:');
+    }
+
+    public function showForgotPassword()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.forgot-password');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Խնդրում ենք մուտքագրել էլ․ հասցեն։',
+            'email.email' => 'Խնդրում ենք մուտքագրել վավեր էլ․ հասցե։',
+            'email.exists' => 'Այս էլ․ հասցեով օգտատեր չի գտնվել։',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $token = Str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now(),
+            ]
+        );
+
+        $resetUrl = route('password.reset', ['token' => $token, 'email' => $user->email]);
+
+        try {
+            Mail::to($user->email)->send(new ResetPasswordMail($user, $resetUrl));
+        } catch (\Throwable $e) {
+            Log::error('Password reset email failed: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Գաղտնաբառի վերականգնման հղումն ուղարկվեց Ձեր էլ․ հասցեին։');
+    }
+
+    public function showResetPassword(Request $request, string $token)
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        $email = $request->query('email');
+        return view('auth.reset-password', compact('token', 'email'));
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'email.exists' => 'Այս էլ․ հասցեով օգտատեր չի գտնվել։',
+            'password.required' => 'Խնդրում ենք մուտքագրել նոր գաղտնաբառը։',
+            'password.min' => 'Գաղտնաբառը պետք է պարունակի առնվազն 8 նիշ։',
+            'password.confirmed' => 'Գաղտնաբառի կրկնությունը չի համընկնում։',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $validated['email'])->first();
+
+        if (!$record || !Hash::check($validated['token'], $record->token)) {
+            return back()->withErrors(['email' => 'Գաղտնաբառի վերականգնման հղումն անվավեր է կամ արդեն օգտագործված:']);
+        }
+
+        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $validated['email'])->delete();
+            return back()->withErrors(['email' => 'Գաղտնաբառի վերականգնման հղումն ժամկետանց է: Խնդրում ենք կրկին հարցում ուղարկել:']);
+        }
+
+        $user = User::where('email', $validated['email'])->first();
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        DB::table('password_reset_tokens')->where('email', $validated['email'])->delete();
+
+        try {
+            Mail::to('datamatrix@elab.am')->send(new PasswordChangedMail($user));
+        } catch (\Throwable $e) {
+            Log::error('Password reset admin notification failed: ' . $e->getMessage());
+        }
+
+        return redirect()->route('login')->with('success', 'Գաղտնաբառը հաջողությամբ վերականգնվեց։ Կարող եք մուտք գործել:');
     }
 
     public function changePassword(Request $request)

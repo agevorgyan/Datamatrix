@@ -204,7 +204,9 @@ class DashboardController extends Controller
             'printed_count' => $guestData['printed_count'],
         ]);
 
-        $codes = collect($guestData['codes']);
+        $codes = collect($guestData['codes'])->map(function ($c) {
+            return is_array($c) ? (object) $c : $c;
+        });
         $setting = LabelSetting::getForUserOrGuest(Auth::user());
 
         return view('print.label_sheet', compact('printJob', 'codes', 'setting'));

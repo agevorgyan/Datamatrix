@@ -71,6 +71,27 @@ class GuestModeTest extends TestCase
         $response->assertSee('ABCDE');
     }
 
+    public function test_unauthenticated_guest_can_render_print_sheet_with_array_codes()
+    {
+        $this->withSession([
+            'guest_print_job' => [
+                'product_name' => 'Array Format Batch',
+                'file_name' => 'array.csv',
+                'total_codes' => 1,
+                'printed_count' => 1,
+                'codes' => [
+                    ['code' => '010486000543210921XYZ99', 'last_5_chars' => 'XYZ99'],
+                ],
+            ]
+        ]);
+
+        $response = $this->get(route('dashboard.print-guest'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Array Format Batch');
+        $response->assertSee('XYZ99');
+    }
+
     public function test_unauthenticated_guest_can_access_and_save_label_settings_in_session()
     {
         $getRes = $this->get(route('settings.edit'));

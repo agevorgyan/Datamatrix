@@ -125,7 +125,7 @@
                     {{ $printJob->product_name }}
                 </div>
                 <div class="last5-layer">
-                    {{ $item->last_5_chars }}
+                    {{ is_array($item) ? ($item['last_5_chars'] ?? '') : ($item->last_5_chars ?? '') }}
                 </div>
                 <div class="datamatrix-layer">
                     <canvas class="datamatrix-canvas" id="canvas-dm-{{ $index }}"></canvas>
