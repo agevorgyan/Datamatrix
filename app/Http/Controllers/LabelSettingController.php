@@ -64,34 +64,28 @@ class LabelSettingController extends Controller
 
         $user = Auth::user();
 
-        $setting = LabelSetting::where('user_id', $user->id)
-            ->where('is_default', true)
-            ->first();
-
-        if (!$setting) {
-            $setting = new LabelSetting(['user_id' => $user->id, 'is_default' => true]);
-        }
-
-        $setting->fill([
-            'setting_name' => $validated['setting_name'] ?? 'XP-356B (20x30մմ)',
-            'width_mm' => $validated['width_mm'],
-            'height_mm' => $validated['height_mm'],
-            'margin_mm' => $validated['margin_mm'],
-            'orientation' => $validated['orientation'],
-            'product_font_size' => $validated['product_font_size'],
-            'product_font_bold' => $request->boolean('product_font_bold'),
-            'product_pos_x' => $validated['product_pos_x'],
-            'product_pos_y' => $validated['product_pos_y'],
-            'last5_font_size' => $validated['last5_font_size'],
-            'last5_font_bold' => $request->boolean('last5_font_bold'),
-            'last5_pos_x' => $validated['last5_pos_x'],
-            'last5_pos_y' => $validated['last5_pos_y'],
-            'datamatrix_size' => $validated['datamatrix_size'],
-            'datamatrix_pos_x' => $validated['datamatrix_pos_x'],
-            'datamatrix_pos_y' => $validated['datamatrix_pos_y'],
-        ]);
-
-        $setting->save();
+        $setting = LabelSetting::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'setting_name' => $validated['setting_name'] ?? 'XP-356B (20x30մմ)',
+                'width_mm' => $validated['width_mm'],
+                'height_mm' => $validated['height_mm'],
+                'margin_mm' => $validated['margin_mm'],
+                'orientation' => $validated['orientation'],
+                'product_font_size' => $validated['product_font_size'],
+                'product_font_bold' => $request->boolean('product_font_bold'),
+                'product_pos_x' => $validated['product_pos_x'],
+                'product_pos_y' => $validated['product_pos_y'],
+                'last5_font_size' => $validated['last5_font_size'],
+                'last5_font_bold' => $request->boolean('last5_font_bold'),
+                'last5_pos_x' => $validated['last5_pos_x'],
+                'last5_pos_y' => $validated['last5_pos_y'],
+                'datamatrix_size' => $validated['datamatrix_size'],
+                'datamatrix_pos_x' => $validated['datamatrix_pos_x'],
+                'datamatrix_pos_y' => $validated['datamatrix_pos_y'],
+                'is_default' => true,
+            ]
+        );
 
         if ($request->wantsJson()) {
             return response()->json([

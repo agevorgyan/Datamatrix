@@ -268,9 +268,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Mouse drag & drop engine
-    enableDragElement(document.getElementById('prev_product_name'), 'product_pos_x', 'product_pos_y');
-    enableDragElement(document.getElementById('prev_last5'), 'last5_pos_x', 'last5_pos_y');
-    enableDragElement(document.getElementById('prev_dm_wrap'), 'datamatrix_pos_x', 'datamatrix_pos_y');
+    enableDragElement(document.getElementById('prev_product_name'), 'set_product_pos_x', 'set_product_pos_y');
+    enableDragElement(document.getElementById('prev_last5'), 'set_last5_pos_x', 'set_last5_pos_y');
+    enableDragElement(document.getElementById('prev_dm_wrap'), 'set_datamatrix_pos_x', 'set_datamatrix_pos_y');
 
     function enableDragElement(el, posXInputId, posYInputId) {
         let isDragging = false;
@@ -304,8 +304,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const mmX = (newLeftPx / 5).toFixed(1);
             const mmY = (newTopPx / 5).toFixed(1);
 
-            document.getElementById(posXInputId).value = mmX;
-            document.getElementById(posYInputId).value = mmY;
+            const inputX = document.getElementById(posXInputId);
+            const inputY = document.getElementById(posYInputId);
+            if (inputX) inputX.value = mmX;
+            if (inputY) inputY.value = mmY;
         }
 
         function onMouseUp() {
@@ -324,20 +326,32 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             body: formData,
             headers: {
+                'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(res => res.json())
+        .then(async res => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                let errorMsg = data.message || 'Սխալ կարգավորումները պահպանելիս:';
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).flat().join('\n');
+                }
+                throw new Error(errorMsg);
+            }
+            return data;
+        })
         .then(data => {
             if (data.success) {
-                alert('✅ Լեյբլի կարգավորումները հաջողությամբ պահպանվեցին:');
+                alert('✅ ' + (data.message || 'Լեյբլի կարգավորումները հաջողությամբ պահպանվեցին:'));
+                window.location.reload();
             } else {
-                alert('Սխալ կարգավորումները պահպանելիս:');
+                alert(data.message || 'Սխալ կարգավորումները պահպանելիս:');
             }
         })
         .catch(err => {
             console.error(err);
-            alert('Սխալ՝ կապի խափանման պատճառով:');
+            alert(err.message || 'Սխալ՝ կապի խափանման պատճառով:');
         });
     });
 });
