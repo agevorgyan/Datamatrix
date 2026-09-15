@@ -63,16 +63,16 @@
                 <table class="w-full text-left text-xs text-slate-700">
                     <thead class="bg-slate-100 text-slate-800 font-bold uppercase text-[11px] border-b border-slate-200">
                         <tr>
-                            <th class="p-4 w-10 text-center">
+                            <th class="p-4 w-12 text-center">
                                 <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
                             </th>
-                            <th class="p-4">ID</th>
-                            <th class="p-4">Ապրանքի Անվանում</th>
-                            <th class="p-4">Ֆայլի Անվանում</th>
-                            <th class="p-4">Կոդեր</th>
-                            <th class="p-4">Կարգավիճակ (Status Badge)</th>
-                            <th class="p-4">Ամսաթիվ</th>
-                            <th class="p-4 text-right">Գործողություններ</th>
+                            <th class="p-4 w-16">ID</th>
+                            <th class="p-4 w-72 min-w-[230px]">Ապրանքի Անվանում</th>
+                            <th class="p-4 w-52 min-w-[180px]">Ֆայլի Անվանում</th>
+                            <th class="p-4 w-24">Կոդեր</th>
+                            <th class="p-4 w-40">Կարգավիճակ (Status Badge)</th>
+                            <th class="p-4 w-36 whitespace-nowrap">Ամսաթիվ</th>
+                            <th class="p-4 w-60 min-w-[220px] text-right">Գործողություններ</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -82,16 +82,20 @@
                                     <input type="checkbox" name="ids[]" value="{{ $job->id }}" class="job-checkbox rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
                                 </td>
                                 <td class="p-4 font-mono text-slate-500 font-bold">#{{ $job->id }}</td>
-                                <td class="p-4 font-bold text-slate-900">{{ $job->product_name }}</td>
-                                <td class="p-4 font-mono text-slate-600">{{ $job->file_name }}</td>
-                                <td class="p-4 font-semibold text-slate-800">
-                                    <span class="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200">
+                                <td class="p-4 font-bold text-slate-900 text-sm leading-snug break-words max-w-[260px]">{{ $job->product_name }}</td>
+                                <td class="p-4">
+                                    <span class="font-mono text-[11px] text-slate-500 max-w-[180px] sm:max-w-[210px] truncate block" title="{{ $job->file_name }}">
+                                        {{ $job->file_name }}
+                                    </span>
+                                </td>
+                                <td class="p-4 font-semibold text-slate-800 whitespace-nowrap">
+                                    <span class="px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 font-bold">
                                         {{ number_format($job->total_codes) }}
                                     </span>
                                 </td>
 
                                 <!-- Visual Status Badges Component -->
-                                <td class="p-4">
+                                <td class="p-4 whitespace-nowrap">
                                     @if($job->status === 'completed')
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                                             <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
@@ -110,17 +114,21 @@
                                     @endif
                                 </td>
 
-                                <td class="p-4 text-slate-500 font-medium">
+                                <td class="p-4 text-slate-500 font-medium whitespace-nowrap">
                                     {{ $job->created_at->format('Y-m-d H:i') }}
                                 </td>
 
-                                <td class="p-4 text-right space-x-1">
-                                    <a href="{{ route('history.show', $job->id) }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition border border-slate-200">
-                                        👁️ Դիտել
-                                    </a>
-                                    <a href="{{ route('dashboard.print', $job->id) }}" target="_blank" class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-bold transition border border-emerald-200">
-                                        🖨️ Տպել
-                                    </a>
+                                <td class="p-4 text-right">
+                                    <div class="flex items-center justify-end space-x-2 whitespace-nowrap">
+                                        <a href="{{ route('history.show', $job->id) }}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-semibold text-xs transition border border-slate-200 inline-flex items-center space-x-1">
+                                            <span>👁️</span>
+                                            <span>Դիտել</span>
+                                        </a>
+                                        <a href="{{ route('dashboard.print', $job->id) }}" target="_blank" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-bold text-xs transition border border-emerald-200 inline-flex items-center space-x-1">
+                                            <span>🖨️</span>
+                                            <span>Տպել</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

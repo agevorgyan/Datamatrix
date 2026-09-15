@@ -8,37 +8,29 @@
         <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
                 <div class="flex items-center space-x-3 mb-2">
-                    <img src="{{ asset('images/logo.png') }}" alt="elab logo" class="h-9 w-auto bg-white/10 p-1 rounded-md border border-white/20">
+                    <img src="{{ asset('images/logo.png') }}" alt="elab logo" class="h-9 w-auto object-contain">
                     <span class="text-xs uppercase font-bold tracking-wider text-emerald-400">DataMatrix Print Engine</span>
                 </div>
                 <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
-                    Լեյբլների Գեներացման & Տպագրության Համակարգ
+                    Դատամատրիքսի գեներացման և տպագրության համակարգ
                 </h1>
                 <p class="text-slate-300 text-xs md:text-sm mt-1 max-w-2xl">
                     Ներբեռնեք CSV ֆայլը, ստուգեք 5 տողերի preview-ն և տպեք լեյբլները ունիվերսալ ջերմային պրինտերներով։
                 </p>
             </div>
 
-            <!-- KPI Metric Cards & Quick Settings Button -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-                <div class="grid grid-cols-3 gap-2 flex-grow">
-                    <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
-                        <div class="text-[10px] uppercase font-bold text-slate-300">Տպված Լեյբլներ</div>
-                        <div class="text-base md:text-lg font-extrabold text-emerald-400 mt-0.5">{{ number_format($totalPrintedCodes) }}</div>
+            <!-- Widened Responsive KPI Metric Cards -->
+            <div class="w-full md:w-auto min-w-[260px] sm:min-w-[340px]">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div class="bg-white/10 backdrop-blur border border-white/10 px-5 py-3.5 rounded-xl text-center shadow-inner">
+                        <div class="text-[11px] uppercase font-bold text-slate-300 tracking-wider">Տպված Լեյբլներ</div>
+                        <div class="text-xl md:text-2xl font-black text-emerald-400 mt-1">{{ number_format($totalPrintedCodes) }}</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
-                        <div class="text-[10px] uppercase font-bold text-slate-300">Խմբաքանակներ</div>
-                        <div class="text-base md:text-lg font-extrabold text-sky-400 mt-0.5">{{ number_format($totalBatchesCount) }}</div>
-                    </div>
-                    <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
-                        <div class="text-[10px] uppercase font-bold text-slate-300">Պրինտեր</div>
-                        <div class="text-xs font-bold text-amber-300 mt-1">Ունիվերսալ</div>
+                    <div class="bg-white/10 backdrop-blur border border-white/10 px-5 py-3.5 rounded-xl text-center shadow-inner">
+                        <div class="text-[11px] uppercase font-bold text-slate-300 tracking-wider">Խմբաքանակներ</div>
+                        <div class="text-xl md:text-2xl font-black text-sky-400 mt-1">{{ number_format($totalBatchesCount) }}</div>
                     </div>
                 </div>
-
-                <a href="{{ route('settings.edit') }}" class="px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2 text-center whitespace-nowrap">
-                    <span>⚙️ Լեյբլի Կարգավորումներ</span>
-                </a>
             </div>
         </div>
     </div>
@@ -179,13 +171,19 @@
                 @if($recentJobs->count() > 0)
                     <div class="divide-y divide-slate-100">
                         @foreach($recentJobs as $job)
-                            <div class="py-2.5 flex items-center justify-between text-xs">
-                                <div>
-                                    <div class="font-semibold text-slate-900">{{ $job->product_name }}</div>
-                                    <div class="text-slate-400 text-[11px]">{{ $job->file_name }} • {{ number_format($job->total_codes) }} կոդ</div>
+                            <div class="py-3 flex items-center justify-between gap-3 text-xs overflow-hidden">
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-slate-900 truncate" title="{{ $job->product_name }}">
+                                        {{ $job->product_name }}
+                                    </div>
+                                    <div class="text-slate-400 text-[11px] flex items-center space-x-1 min-w-0" title="{{ $job->file_name }}">
+                                        <span class="font-mono max-w-[120px] sm:max-w-[160px] truncate block">{{ $job->file_name }}</span>
+                                        <span class="shrink-0">• {{ number_format($job->total_codes) }} կոդ</span>
+                                    </div>
                                 </div>
-                                <a href="{{ route('dashboard.print', $job->id) }}" target="_blank" class="px-3 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold rounded-lg transition border border-emerald-200">
-                                    🖨️ Տպել
+                                <a href="{{ route('dashboard.print', $job->id) }}" target="_blank" class="shrink-0 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold rounded-lg transition border border-emerald-200 inline-flex items-center space-x-1 whitespace-nowrap">
+                                    <span>🖨️</span>
+                                    <span>Տպել</span>
                                 </a>
                             </div>
                         @endforeach

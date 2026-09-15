@@ -39,109 +39,101 @@
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen font-sans antialiased">
 
-    <!-- Top Navigation Bar with Responsive Burger Menu -->
-    <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Top Navigation Bar with Burger Menu -->
+    <header class="bg-slate-900 text-white shadow-lg border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- Logo & Brand Header -->
-            <div class="flex items-center space-x-3">
-                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
-                    <img src="{{ asset('images/logo.png') }}" alt="elab logo" class="h-10 w-auto object-contain bg-white/10 p-1 rounded-lg backdrop-blur border border-white/20 shadow-sm">
+            <!-- Enlarged Logo & Brand Header (No border) -->
+            <div class="flex items-center">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-3.5 group">
+                    <img src="{{ asset('images/logo.png') }}" alt="elab logo" class="h-14 sm:h-16 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
                     <div class="flex flex-col">
-                        <span class="text-base sm:text-lg font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-sky-300 to-indigo-300">
+                        <span class="text-lg sm:text-xl md:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-sky-300 to-indigo-300">
                             DataMatrix Print Engine
                         </span>
-                        <span class="text-[10px] text-emerald-400 font-medium tracking-wide">by elab Digital Studio</span>
+                        <span class="text-xs text-emerald-400 font-medium tracking-wide">by elab Digital Studio</span>
                     </div>
                 </a>
-                <span class="hidden xl:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
-                    Ունիվերսալ Լեյբլ Պրինտեր
-                </span>
             </div>
 
-            <!-- Desktop Navigation Links -->
-            <nav class="hidden md:flex items-center space-x-1 lg:space-x-3">
+            <!-- Burger Menu Trigger Button -->
+            <div class="flex items-center space-x-3">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-lg text-xs font-bold transition-colors {{ request()->routeIs('dashboard') ? 'bg-slate-800 text-emerald-400 border border-slate-700' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
-                        📊 Dashboard / Տպագրություն
-                    </a>
-                    <a href="{{ route('settings.edit') }}" class="px-3 py-2 rounded-lg text-xs font-bold transition-colors {{ request()->routeIs('settings.*') ? 'bg-slate-800 text-emerald-400 border border-slate-700' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
-                        ⚙️ Կարգավորումներ
-                    </a>
-                    <a href="{{ route('history.index') }}" class="px-3 py-2 rounded-lg text-xs font-bold transition-colors {{ request()->routeIs('history.*') ? 'bg-slate-800 text-emerald-400 border border-slate-700' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
-                        📜 Պատմություն
-                    </a>
-                    <a href="{{ route('help.index') }}" class="px-3 py-2 rounded-lg text-xs font-bold transition-colors {{ request()->routeIs('help.*') ? 'bg-slate-800 text-emerald-400 border border-slate-700' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
-                        ❓ Օգնություն
-                    </a>
-
-                    <div class="pl-3 border-l border-slate-800 flex items-center space-x-3">
-                        <span class="text-xs text-slate-400 hidden lg:inline-block">
-                            👤 {{ Auth::user()->name }}
-                        </span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600/20 text-rose-300 hover:bg-rose-600 hover:text-white transition-all border border-rose-500/30">
-                                Դուրս գալ
-                            </button>
-                        </form>
+                    <div class="hidden sm:flex items-center space-x-2 text-xs text-slate-300 bg-slate-800/90 px-3.5 py-1.5 rounded-full border border-slate-700/60">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="font-semibold">{{ Auth::user()->name }}</span>
                     </div>
-                @else
-                    <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-300 hover:text-white">
-                        Մուտք
-                    </a>
-                    <a href="{{ route('register') }}" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-sm">
-                        Գրանցվել
-                    </a>
                 @endauth
-            </nav>
 
-            <!-- Mobile Hamburger (Burger) Button -->
-            <div class="flex items-center md:hidden">
-                <button type="button" id="mobileMenuBtn" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white focus:outline-none border border-slate-700">
-                    <svg class="h-6 w-6" id="burgerIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                <button type="button" id="mobileMenuBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 font-bold text-xs shadow-md transition flex items-center space-x-2 focus:outline-none">
+                    <svg class="h-5 w-5 text-emerald-400" id="burgerIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                    <svg class="h-6 w-6 hidden" id="closeIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg class="h-5 w-5 text-emerald-400 hidden" id="closeIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
+                    <span class="tracking-wide">ՄԵՆՅՈՒ</span>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile Drawer Menu Dropdown -->
-        <div id="mobileDrawer" class="hidden md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2">
-            @auth
-                <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-bold {{ request()->routeIs('dashboard') ? 'bg-slate-800 text-emerald-400' : 'text-slate-300 hover:bg-slate-800' }}">
-                    📊 Dashboard / Տպագրություն
-                </a>
-                <a href="{{ route('settings.edit') }}" class="block px-3 py-2 rounded-lg text-sm font-bold {{ request()->routeIs('settings.*') ? 'bg-slate-800 text-emerald-400' : 'text-slate-300 hover:bg-slate-800' }}">
-                    ⚙️ Լեյբլի Կարգավորումներ
-                </a>
-                <a href="{{ route('history.index') }}" class="block px-3 py-2 rounded-lg text-sm font-bold {{ request()->routeIs('history.*') ? 'bg-slate-800 text-emerald-400' : 'text-slate-300 hover:bg-slate-800' }}">
-                    📜 Տպագրության Պատմություն
-                </a>
-                <a href="{{ route('help.index') }}" class="block px-3 py-2 rounded-lg text-sm font-bold {{ request()->routeIs('help.*') ? 'bg-slate-800 text-emerald-400' : 'text-slate-300 hover:bg-slate-800' }}">
-                    ❓ Օգնություն & Ուղեցույց
-                </a>
+        <!-- Burger Menu Dropdown Drawer Panel -->
+        <div id="mobileDrawer" class="hidden bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 px-4 sm:px-8 py-5 shadow-2xl transition-all">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('dashboard') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                        <span class="text-xl">📊</span>
+                        <div>
+                            <div class="font-bold text-sm">Dashboard / Տպագրություն</div>
+                            <div class="text-[11px] text-slate-400">Կոդերի ներբեռնում և տպում</div>
+                        </div>
+                    </a>
 
-                <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">👤 {{ Auth::user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600/20 text-rose-300 hover:bg-rose-600 hover:text-white transition border border-rose-500/30">
-                            Դուրս գալ
-                        </button>
-                    </form>
-                </div>
-            @else
-                <a href="{{ route('login') }}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-300 hover:bg-slate-800">
-                    Մուտք
-                </a>
-                <a href="{{ route('register') }}" class="block px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 text-white text-center">
-                    Գրանցվել
-                </a>
-            @endauth
+                    <a href="{{ route('settings.edit') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('settings.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                        <span class="text-xl">⚙️</span>
+                        <div>
+                            <div class="font-bold text-sm">Կարգավորումներ</div>
+                            <div class="text-[11px] text-slate-400">Լեյբլի չափսեր, DPI, margins</div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('history.index') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('history.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                        <span class="text-xl">📜</span>
+                        <div>
+                            <div class="font-bold text-sm">Տպագրության Պատմություն</div>
+                            <div class="text-[11px] text-slate-400">Նախկինում տպված batch-եր</div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('help.index') }}" class="p-3.5 rounded-xl transition-all border {{ request()->routeIs('help.*') ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300' : 'bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600' }} flex items-center space-x-3">
+                        <span class="text-xl">❓</span>
+                        <div>
+                            <div class="font-bold text-sm">Օգնություն & Ուղեցույց</div>
+                            <div class="text-[11px] text-slate-400">Հաճախ տրվող հարցեր</div>
+                        </div>
+                    </a>
+
+                    <div class="sm:col-span-2 md:col-span-4 pt-3 mt-2 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-xs text-slate-400">👤 Մուտք գործված է որպես՝ <b class="text-white">{{ Auth::user()->name }}</b></span>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 text-xs font-bold rounded-xl bg-rose-600/20 text-rose-300 hover:bg-rose-600 hover:text-white transition border border-rose-500/30 flex items-center space-x-1.5">
+                                <span>🚪</span>
+                                <span>Դուրս գալ</span>
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="p-3.5 rounded-xl bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-700 flex items-center space-x-3">
+                        <span class="text-xl">🔑</span>
+                        <span class="font-bold text-sm">Մուտք</span>
+                    </a>
+                    <a href="{{ route('register') }}" class="p-3.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-500 flex items-center space-x-3">
+                        <span class="text-xl">✨</span>
+                        <span class="font-bold text-sm">Գրանցվել</span>
+                    </a>
+                @endauth
+            </div>
         </div>
     </header>
 
