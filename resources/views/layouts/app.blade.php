@@ -193,6 +193,29 @@
         </div>
     </footer>
 
+    <!-- Floating Cookie Consent Banner -->
+    <div id="cookieConsentBanner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-50 bg-slate-900/95 backdrop-blur-md text-white p-5 rounded-2xl shadow-2xl border border-slate-700/80 transition-all duration-300 transform translate-y-32 opacity-0 pointer-events-none">
+        <div class="flex items-start space-x-3">
+            <span class="text-2xl shrink-0">🍪</span>
+            <div class="space-y-2">
+                <h4 class="text-sm font-bold text-white">
+                    Cookie Ֆայլերի Օգտագործում
+                </h4>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Մեր համակարգն օգտագործում է Cookie ֆայլեր՝ աշխատանքի հարմարավետությունն ու անվտանգությունն ապահովելու համար։ Ավելին իմանալու համար կարդացեք մեր <a href="{{ route('privacy') }}" class="text-emerald-400 underline hover:text-emerald-300 font-medium">Գաղտնիության Քաղաքականությունը</a>։
+                </p>
+                <div class="pt-1 flex items-center space-x-2">
+                    <button type="button" id="acceptCookieBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md transition border border-emerald-500">
+                        ✅ Ընդունել Բոլորը
+                    </button>
+                    <button type="button" id="declineCookieBtn" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition">
+                        Մերժել
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Mobile Burger Menu Toggle Logic
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -213,6 +236,34 @@
                     closeIcon.classList.add('hidden');
                 }
             });
+        }
+
+        // Cookie Consent Logic
+        const cookieBanner = document.getElementById('cookieConsentBanner');
+        const acceptCookieBtn = document.getElementById('acceptCookieBtn');
+        const declineCookieBtn = document.getElementById('declineCookieBtn');
+
+        if (cookieBanner) {
+            const hasConsented = localStorage.getItem('cookie_consent');
+            if (!hasConsented) {
+                setTimeout(() => {
+                    cookieBanner.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
+                }, 500);
+            }
+
+            if (acceptCookieBtn) {
+                acceptCookieBtn.addEventListener('click', function () {
+                    localStorage.setItem('cookie_consent', 'accepted');
+                    cookieBanner.classList.add('translate-y-32', 'opacity-0', 'pointer-events-none');
+                });
+            }
+
+            if (declineCookieBtn) {
+                declineCookieBtn.addEventListener('click', function () {
+                    localStorage.setItem('cookie_consent', 'declined');
+                    cookieBanner.classList.add('translate-y-32', 'opacity-0', 'pointer-events-none');
+                });
+            }
         }
     </script>
 
